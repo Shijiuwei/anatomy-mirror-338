@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>anatomy-mirror-338 - 官方开源镜像与技术白皮书中心</title>
+  <meta name="description" content="High availability mirror and network topology specifications for wheresryan22/anatomy">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+      :root {
+        --color-primary: #2563eb;
+        --color-primary-hover: #1d4ed8;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        line-height: 1.68;
+        color: #1e293b;
+      }
+      .markdown-body {
+        color: #1e293b;
+      }
+      .markdown-body h1 {
+        font-size: 2.25rem;
+        font-weight: 800;
+        margin-top: 1.8rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.6rem;
+        border-bottom: 2px solid #e2e8f0;
+        color: #0f172a;
+        line-height: 1.25;
+      }
+      .markdown-body h2 {
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin-top: 1.6rem;
+        margin-bottom: 0.8rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 1px solid #f1f5f9;
+        color: #1e293b;
+      }
+      .markdown-body h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-top: 1.3rem;
+        margin-bottom: 0.6rem;
+        color: #334155;
+      }
+      .markdown-body p {
+        margin-top: 0.8rem;
+        margin-bottom: 0.8rem;
+        line-height: 1.7;
+      }
+      .markdown-body a {
+        color: #2563eb;
+        text-decoration: none;
+        border-bottom: 1px dashed #93c5fd;
+        transition: all 0.2s ease;
+      }
+      .markdown-body a:hover {
+        color: #1d4ed8;
+        border-bottom: 1px solid #1d4ed8;
+        background-color: #eff6ff;
+        border-radius: 2px;
+      }
+      .markdown-body ul, .markdown-body ol {
+        padding-left: 1.5rem;
+        margin-top: 0.6rem;
+        margin-bottom: 0.6rem;
+      }
+      .markdown-body ul {
+        list-style-type: disc;
+      }
+      .markdown-body ol {
+        list-style-type: decimal;
+      }
+      .markdown-body li {
+        margin-top: 0.25rem;
+        margin-bottom: 0.25rem;
+      }
+      .markdown-body pre {
+        background-color: #0f172a;
+        color: #e2e8f0;
+        padding: 1rem 1.2rem;
+        border-radius: 0.75rem;
+        overflow-x: auto;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.875rem;
+        margin: 1rem 0;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+      .markdown-body code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.875em;
+        padding: 0.15rem 0.35rem;
+        background-color: #f1f5f9;
+        color: #0f172a;
+        border-radius: 0.35rem;
+        border: 1px solid #e2e8f0;
+      }
+      .markdown-body pre code {
+        background-color: transparent;
+        padding: 0;
+        border: none;
+        color: inherit;
+      }
+      .markdown-body blockquote {
+        margin: 1rem 0;
+        padding: 0.75rem 1.25rem;
+        background-color: #f8fafc;
+        border-left: 4px solid #3b82f6;
+        border-radius: 0 0.5rem 0.5rem 0;
+        color: #475569;
+      }
+      .markdown-body table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1.2rem 0;
+        display: block;
+        overflow-x: auto;
+      }
+      .markdown-body th, .markdown-body td {
+        border: 1px solid #cbd5e1;
+        padding: 0.6rem 1rem;
+        text-align: left;
+      }
+      .markdown-body th {
+        background-color: #f1f5f9;
+        font-weight: 600;
+      }
+      .markdown-body tr:nth-child(even) {
+        background-color: #f8fafc;
+      }
+      .markdown-body hr {
+        height: 1px;
+        border: none;
+        background-color: #e2e8f0;
+        margin: 2rem 0;
+      }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col antialiased">
+  <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-slate-200">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <a href="./index.html" class="flex items-center gap-2 group">
+        <span class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white font-bold text-sm shadow-sm group-hover:scale-105 transition-transform ">LM</span>
+        <span class="font-bold text-slate-900 tracking-tight text-lg group-hover:text-blue-600 transition-colors ">anatomy-mirror-338</span>
+      </a>
+      <span class="hidden md:inline-block text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-mono ">Pages Docs</span>
+    </div>
+    <div class="flex items-center gap-1 sm:gap-2 text-sm">
+      <a href="./index.html" class="px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 text-blue-600 bg-blue-50 font-semibold ">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        <span>首页 (README)</span>
+      </a>
+      <a href="./docs/index.html" class="px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 text-slate-600 hover:text-blue-600 hover:bg-slate-50 font-medium ">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+        <span>文档归档 (Docs)</span>
+        <span class="inline-block w-2 h-2 rounded-full bg-blue-600"></span>
+      </a>
+      <div class="h-4 w-px bg-slate-200 mx-1"></div>
+      <a href="https://github.com/shijiuwei/anatomy-mirror-338" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1.5 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-50 transition-colors flex items-center gap-1.5 ">
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+        <span class="hidden sm:inline">GitHub</span>
+      </a>
+      <a href="https://github.com/shijiuwei/anatomy-mirror-338/wiki" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1.5 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-50 transition-colors flex items-center gap-1.5 ">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <span class="hidden sm:inline">Wiki</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+  <!-- Hero Header -->
+  <header class="bg-gradient-to-r from-slate-900 via-indigo-950 to-blue-900 text-white py-12 px-4 sm:px-6 shadow-md border-b border-slate-800">
+    <div class="max-w-6xl mx-auto">
+      <div class="flex flex-wrap items-center gap-2 mb-3">
+        <span class="px-2.5 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-400/30 rounded-full text-xs font-semibold">✓ 官方高可用开源镜像</span>
+        <span class="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 rounded-full text-xs font-semibold">● 72h 存活率指标 99.8%</span>
+        <span class="px-2.5 py-0.5 bg-purple-500/20 text-purple-300 border border-purple-400/30 rounded-full text-xs font-mono ">GitHub Pages</span>
+      </div>
+      <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white mb-4">anatomy-mirror-338</h1>
+      <p class="text-slate-300 text-base sm:text-lg max-w-3xl leading-relaxed mb-6">High availability mirror and network topology specifications for wheresryan22/anatomy</p>
+      
+      <!-- 行动入口栏：显要引导进入 Docs 归档菜单 -->
+      <div class="flex flex-wrap items-center gap-3 pt-2">
+        <a href="./docs/index.html" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm shadow-lg shadow-blue-600/30 transition-all hover:scale-[1.02] active:scale-[0.98] ">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+          <span>进入文档归档菜单 (Docs Catalog) &rarr;</span>
+        </a>
+        <a href="#readme-content" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-medium text-sm border border-white/20 backdrop-blur transition-colors ">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+          <span>查阅项目 README 正文</span>
+        </a>
+        <a href="https://github.com/shijiuwei/anatomy-mirror-338" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-slate-300 hover:text-white text-xs transition-colors ">
+          <span>访问 GitHub 源码库</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主体区域：两栏布局（主栏：改造后 README；侧栏：Docs 归档菜单预览与外链速查） -->
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 py-10 flex-1 w-full">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- 主内容区：展示改造后的 README.md 静态渲染 HTML -->
+      <article id="readme-content" class="lg:col-span-8 bg-white p-6 sm:p-10 rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="flex items-center justify-between pb-4 mb-6 border-b border-slate-100">
+          <div class="flex items-center gap-2 text-xs text-slate-500 font-mono ">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+            <span>README.md (已注入高权重拓扑网络)</span>
+          </div>
+          <a href="./docs/index.html" class="text-xs text-blue-600 hover:underline flex items-center gap-1 font-medium ">
+            <span>浏览全部 3 篇归档文档</span>
+            <span>&rarr;</span>
+          </a>
+        </div>
+        <div class="markdown-body">
+          <p align="left">
+  <a href="https://shijiuwei.github.io/anatomy-mirror-338/"><img src="https://img.shields.io/badge/GitHub_Pages-在线文档中心-2563eb.svg" alt="GitHub Pages"></a>
+  <a href="https://shijiuwei.github.io/anatomy-mirror-338/docs/"><img src="https://img.shields.io/badge/Docs_Archive-文档归档菜单-10b981.svg" alt="Docs Archive"></a>
+</p>
+<blockquote>
+<p>🌐 <strong>官方在线文档与静态镜像中心 (GitHub Pages)</strong>：<a href="https://shijiuwei.github.io/anatomy-mirror-338/">https://shijiuwei.github.io/anatomy-mirror-338/</a><br />
+📚 <strong>技术规约与文档归档菜单 (Docs Catalog)</strong>：<a href="https://shijiuwei.github.io/anatomy-mirror-338/docs/">https://shijiuwei.github.io/anatomy-mirror-338/docs/</a></p>
+</blockquote>
+<h1 align="center">Anatomy</h1>
+<p align="center"><b>A Claude skill that explains an idea by building it as a real, working object.</b><br>Also runs in Antigravity, OpenCode, Codex and MiniMax Code.<br>Crafted, interactive isometric figures with many small precise parts, in SVG, WebGL and 3D.</p>
+<p align="center">
+  <a href="https://tcxi.yx-sf.com/jiaoliu/accessibility-10755077.html"><img src="https://img.shields.io/badge/Claude_Code-skill-1b1b19?style=flat-square&logo=claude&logoColor=white" alt="Claude Code skill"></a>
+  <a href="https://nqng.wtpuscm.cn/yanjiu/funnel-965710.html"><img src="https://img.shields.io/badge/Agent_Skills-compatible-1b1b19?style=flat-square" alt="Agent Skills compatible"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-1b1b19?style=flat-square" alt="MIT license"></a>
+  <a href="#requirements"><img src="https://img.shields.io/badge/node-%E2%89%A5%2020.10-1b1b19?style=flat-square&logo=nodedotjs&logoColor=white" alt="Node 20.10 or later"></a>
+  <a href="#requirements"><img src="https://img.shields.io/badge/dependencies-0-1b1b19?style=flat-square" alt="No dependencies"></a>
+  <a href="https://ssyn.ai-hao123.com/youhua/calendar-15190577.html"><img src="https://github.com/wheresryan22/anatomy/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+</p>
+<p align="center">
+  <a href="https://nriq.yx-sf.com/kaifa/cost-04692108.html"><img src="https://img.shields.io/badge/Website-skills.wheresryan.sh%2Fanatomy-1b1b19?style=for-the-badge" alt="Website: skills.wheresryan.sh/anatomy"></a>
+  &nbsp;
+  <a href="https://beij.ai-hao123.com/chanpin/cost-31869368.html"><img src="https://img.shields.io/badge/Download-ZIP-1b1b19?style=for-the-badge&logo=github&logoColor=white" alt="Download ZIP"></a>
+  &nbsp;
+  <a href="#install"><img src="https://img.shields.io/badge/Install-npx_skills_add-d7d7d0?style=for-the-badge&labelColor=1b1b19&logo=npm&logoColor=white" alt="Install with npx"></a>
+</p>
+<p align="center">
+  <a href="#quick-start">Quick start</a> ·
+  <a href="#gallery">Gallery</a> ·
+  <a href="#what-it-makes">What it makes</a> ·
+  <a href="#install">Install</a> ·
+  <a href="#usage">Usage</a> ·
+  <a href="#examples">Examples</a> ·
+  <a href="#how-it-works">How it works</a> ·
+  <a href="#limits">Limits</a>
+</p>
+<p align="center">
+  <img src=".github/assets/raptor-engine-firing.webp" width="640" alt="An isometric drawing of a Raptor 2 rocket engine hanging in a test stand, firing: a red exhaust plume, drawn by a WebGL shader, pours onto the stand's base plate. The card reads Fig 1, Raptor 2 test stand, Pc 300 bar, 230 tf.">
+</p>
+<p align="center"><sub><code>examples/raptor-engine</code>, light theme, firing. The engine and stand are SVG; the plume is a WebGL shader in the same isometric camera.</sub></p>
+<hr />
+<p>Ask Claude for a figure that explains a technical idea, and Anatomy has it invent a physical thing whose working <em>is</em> the concept. A cache key that skips work when nothing changed becomes a pin-tumbler lock that only turns when every pin matches. One GPU context serving many canvases becomes a gantry plotter whose single print head visits 16 wells.</p>
+<p>Then Claude builds that thing out of dozens of small, solid, shaded parts, puts it in a framed card with a title, a hint and a live readout, makes it move calmly under the pointer and the keyboard, and checks its own work by zooming in on every joint. Every number the figure shows comes from the same small model that moves its parts.</p>
+<h2>Quick start</h2>
+<pre><code class="language-sh">npx skills add wheresryan22/anatomy -g
+</code></pre>
+<p>The CLI asks which agents to set up (Claude Code, Antigravity, OpenCode, Codex, MiniMax Code). To skip the question, add <code>-a claude-code</code>, <code>-a antigravity</code>, <code>-a opencode</code>, <code>-a codex</code>, or <code>-a minimax-code</code>.</p>
+<p>Then, in Claude Code:</p>
+<pre><code class="language-text">/anatomy explain how a token bucket rate limiter works, interactive
+</code></pre>
+<p>For Antigravity, OpenCode, Codex, or MiniMax Code, target that agent: <code>-a antigravity</code>, <code>-a opencode</code>, <code>-a codex</code>, or <code>-a minimax-code</code>. Antigravity, OpenCode and MiniMax Code take the same <code>/anatomy</code> command; in Codex, type <code>$anatomy</code>.</p>
+<p>That's it. No API keys and nothing to <code>npm install</code>: the kit uses only Node's built-in modules.</p>
+<h2>Gallery</h2>
+<table>
+  <tr>
+    <td width="50%"><img src=".github/assets/raptor-engine-apart.webp" alt="The Raptor 2 engine taken apart in its test stand: its assemblies, pipes and harness hang apart from each other between the posts of the stand."></td>
+    <td width="50%"><img src=".github/assets/ripple-tank.webp" alt="A school ripple tank on four tall legs, with a lamp on an arm above it. Two dippers on a vibrating bar make interfering waves, and their caustics are projected onto the paper screen under the tank."></td>
+  </tr>
+  <tr>
+    <td><sub><b>raptor-engine</b>: hover to take it apart into 11 assemblies. An audit proves that no pipe passes through anything, at rest, apart and in every frame between.</sub></td>
+    <td><sub><b>ripple-tank</b>: SVG apparatus over two WebGL layers (lamp light and caustics on the paper, reflections in the water) driven by a dispersion and optics model.</sub></td>
+  </tr>
+  <tr>
+    <td><img src=".github/assets/turning-dial.webp" alt="A combination dial on a raised door plate. A small gold and chrome robot hand lies on the dial and turns with it; a green light glows under one fingertip."></td>
+    <td><img src=".github/assets/dial-indicator.webp" alt="A dial indicator gauge on a stand above a base plate with a ruler strip. Its plunger rests on one of three gauge blocks on a sliding carriage."></td>
+  </tr>
+  <tr>
+    <td><sub><b>turning-dial</b>: the 3D mode (beta). About 90 parts are re-projected and re-shaded every frame as you drag the dial.</sub></td>
+    <td><sub><b>dial-indicator</b>: the smallest example, about 300 lines. Hover to slide the carriage; the needle reads each block.</sub></td>
+  </tr>
+</table>
+<p>Every screenshot is the light theme of a page in <a href="examples"><code>examples/</code></a>, captured with the skill's own <a href="scripts/capture.mjs"><code>scripts/capture.mjs</code></a> and <a href="scripts/drive.mjs"><code>scripts/drive.mjs</code></a>. The built pages are committed: open any <code>.html</code> in <code>examples/</code> to try it.</p>
+<h2>What it makes</h2>
+<p>Three kinds of figure. All three share one kit, one camera and one set of craft rules.</p>
+<table><thead><tr><th>Kind</th><th>What it is</th><th>Example</th></tr></thead><tbody>
+<tr><td><strong>SVG</strong></td><td>The core. Solid isometric parts with four-tone shading, painted back to front, in a card with a live readout and eased motion. It ships as a standalone HTML page, a lone <code>.svg</code> file with its styles embedded, or React/Next.js components.</td><td><code>dial-indicator</code>, <code>desk-computer</code>, <code>arcade-cabinet</code>, <code>test-rig</code></td></tr>
+<tr><td><strong>SVG + WebGL</strong></td><td>For what lines can't draw: fire, exhaust, water, caustics, lamp light, glow, steam. The shader runs in a canvas between a back and a front SVG, in the figure's own isometric camera, so it sits inside the drawing. The SVG still reads without WebGL.</td><td><code>raptor-engine</code>, <code>ripple-tank</code></td></tr>
+<tr><td><strong>3D</strong> <sup>beta</sup></td><td>Parts that turn in true 3D: a dial or turntable that spins, fingers that flex, a piece that breaks off and falls. The moving parts are re-projected and re-shaded by the kit's own rules every frame; the rest of the figure stays static art.</td><td><code>turning-dial</code></td></tr>
+</tbody></table>
+<p>Each figure is light or dark. Light is the theme the skill designs for first, shaders included.</p>
+<h2>Install</h2>
+<p>Anatomy is a standard <a href="https://ggvt.yx-sf.com/anfang/affordable-15965766.html">Agent Skill</a>: a folder with a <code>SKILL.md</code> at its root. This repository is that folder. Pick one way in:</p>
+<table><thead><tr><th></th><th>Command</th><th>Installs to</th></tr></thead><tbody>
+<tr><td><strong>skills CLI</strong>, for you (Claude Code)</td><td><code>npx skills add wheresryan22/anatomy -g -a claude-code</code></td><td><code>~/.claude/skills/anatomy</code></td></tr>
+<tr><td><strong>skills CLI</strong>, for you (Antigravity)</td><td><code>npx skills add wheresryan22/anatomy -g -a antigravity</code></td><td><code>~/.gemini/antigravity/skills/anatomy</code></td></tr>
+<tr><td><strong>skills CLI</strong>, for you (OpenCode)</td><td><code>npx skills add wheresryan22/anatomy -g -a opencode</code></td><td><code>~/.config/opencode/skills/anatomy</code></td></tr>
+<tr><td><strong>skills CLI</strong>, for you (Codex)</td><td><code>npx skills add wheresryan22/anatomy -g -a codex</code></td><td><code>~/.agents/skills/anatomy</code></td></tr>
+<tr><td><strong>skills CLI</strong>, for you (MiniMax Code)</td><td><code>npx skills add wheresryan22/anatomy -g -a minimax-code</code></td><td><code>~/.minimax/skills/anatomy</code></td></tr>
+<tr><td><strong>skills CLI</strong>, for one project</td><td><code>npx skills add wheresryan22/anatomy</code></td><td><code>.claude/skills/anatomy</code> for Claude Code, <code>.agents/skills/anatomy</code> for Antigravity, OpenCode and Codex, <code>.minimax/skills/anatomy</code> for MiniMax Code</td></tr>
+<tr><td><strong>git</strong>, for you (Claude Code)</td><td><code>git clone https://github.com/wheresryan22/anatomy.git ~/.claude/skills/anatomy</code></td><td><code>~/.claude/skills/anatomy</code></td></tr>
+<tr><td><strong>git</strong>, for you (Antigravity)</td><td><code>git clone https://github.com/wheresryan22/anatomy.git ~/.gemini/antigravity/skills/anatomy</code></td><td><code>~/.gemini/antigravity/skills/anatomy</code></td></tr>
+<tr><td><strong>git</strong>, for you (OpenCode)</td><td><code>git clone https://github.com/wheresryan22/anatomy.git ~/.config/opencode/skills/anatomy</code></td><td><code>~/.config/opencode/skills/anatomy</code></td></tr>
+<tr><td><strong>git</strong>, for you (Codex)</td><td><code>git clone https://github.com/wheresryan22/anatomy.git ~/.agents/skills/anatomy</code></td><td><code>~/.agents/skills/anatomy</code></td></tr>
+<tr><td><strong>git</strong>, for you (MiniMax Code)</td><td><code>git clone https://github.com/wheresryan22/anatomy.git ~/.minimax/skills/anatomy</code></td><td><code>~/.minimax/skills/anatomy</code></td></tr>
+<tr><td><strong>git</strong>, for one project</td><td><code>git clone https://github.com/wheresryan22/anatomy.git .claude/skills/anatomy</code></td><td><code>.claude/skills/anatomy</code> (Claude Code and OpenCode) or <code>.agents/skills/anatomy</code> (Antigravity, OpenCode, Codex and MiniMax Code)</td></tr>
+<tr><td><strong>Download</strong>, no git</td><td>see below</td><td>any of the folders above</td></tr>
+</tbody></table>
+<details>
+<summary><b>With the skills CLI</b></summary>
+<br>
+<p>The <a href="https://phhp.wtpuscm.cn/zhinan/audience-066574.html"><code>skills</code></a> CLI finds the <code>SKILL.md</code> at the root of this repository and installs it as <code>anatomy</code>. By default it installs into the current project and asks which agents to set up. <code>-g</code> installs it for your user, and <code>-a claude-code</code> sets up Claude Code only. Use <code>-a antigravity</code>, <code>-a opencode</code>, <code>-a codex</code> or <code>-a minimax-code</code> for Antigravity, OpenCode, Codex or MiniMax Code only.</p>
+<p>The CLI copies the whole repository, examples included (about 10 MB). It needs a recent Node.js: version 1.7.1 of the CLI asks for 22.20 or later.</p>
+</details>
+<details>
+<summary><b>With git</b></summary>
+<br>
+<p>Clone the repository into one of the skill folders, so that <code>SKILL.md</code> ends up at <code>&lt;skills folder&gt;/anatomy/SKILL.md</code>. For Claude Code use <code>~/.claude/skills/anatomy</code> or <code>.claude/skills/anatomy</code>. For Antigravity use <code>~/.gemini/antigravity/skills/anatomy</code> or <code>.agents/skills/anatomy</code>. For OpenCode use <code>~/.config/opencode/skills/anatomy</code> or <code>.opencode/skills/anatomy</code>; OpenCode also reads the Claude Code and <code>.agents</code> folders. For Codex use <code>~/.agents/skills/anatomy</code> or <code>.agents/skills/anatomy</code>. For MiniMax Code use <code>~/.minimax/skills/anatomy</code> (or <code>$MINIMAX_DATA_DIR/skills/anatomy</code> if you moved its data folder) or <code>.minimax/skills/anatomy</code>; MiniMax Code also reads the Claude Code, Codex and <code>.agents</code> folders. For a project install, commit the folder so your team gets it too. To update later, <code>git pull</code> inside that folder.</p>
+</details>
+<details>
+<summary><b>Download, without git</b></summary>
+<br>
+<p><a href="https://ungq.tcti.cn/xitong/study-66573425.html">Download the ZIP</a>, unpack it, rename the folder from <code>anatomy-main</code> to <code>anatomy</code>, and move it into <code>~/.claude/skills/</code> (Claude Code), <code>~/.gemini/antigravity/skills/</code> (Antigravity), <code>~/.config/opencode/skills/</code> (OpenCode), <code>~/.agents/skills/</code> (Codex) or <code>~/.minimax/skills/</code> (MiniMax Code).</p>
+<p>Or in one line on macOS or Linux:</p>
+<pre><code class="language-sh">mkdir -p ~/.claude/skills/anatomy &amp;&amp; curl -L https://github.com/wheresryan22/anatomy/archive/refs/heads/main.tar.gz | tar -xz --strip-components=1 -C ~/.claude/skills/anatomy
+</code></pre>
+<p>For Antigravity, OpenCode, Codex or MiniMax Code, put the same files in <code>~/.gemini/antigravity/skills/anatomy</code>, <code>~/.config/opencode/skills/anatomy</code>, <code>~/.agents/skills/anatomy</code> or <code>~/.minimax/skills/anatomy</code>:</p>
+<pre><code class="language-sh">mkdir -p ~/.gemini/antigravity/skills/anatomy &amp;&amp; curl -L https://github.com/wheresryan22/anatomy/archive/refs/heads/main.tar.gz | tar -xz --strip-components=1 -C ~/.gemini/antigravity/skills/anatomy
+</code></pre>
+<pre><code class="language-sh">mkdir -p ~/.config/opencode/skills/anatomy &amp;&amp; curl -L https://github.com/wheresryan22/anatomy/archive/refs/heads/main.tar.gz | tar -xz --strip-components=1 -C ~/.config/opencode/skills/anatomy
+</code></pre>
+</details>
+<p>Claude Code picks up new skills in a running session. If the <code>skills</code> folder itself did not exist when the session started, run <code>/reload-skills</code>. Antigravity and OpenCode list it as <code>/anatomy</code> in their chat; restart if it does not show. Codex lists it under <code>/skills</code> and runs it with <code>$anatomy</code>; restart Codex if it does not show. MiniMax Code lists it as <code>/anatomy</code>; restart <code>mcode</code> if it does not show.</p>
+<details>
+<summary><b>Codex: if the browser checks are blocked</b></summary>
+<br>
+<p>The skill checks its own figures by starting headless Chrome, which writes a temporary profile and talks to it over a local port. Codex runs commands in a sandbox, and that sandbox may stop Chrome. The figure is still built; only its checks fail. In order of preference:</p>
+<ol>
+<li>
+<p>When Codex asks to run a check outside the sandbox, approve it for that command. This needs the default <code>approval_policy = "on-request"</code>.</p>
+</li>
+<li>
+<p>Or allow it once in <code>~/.codex/config.toml</code>:</p>
+<pre><code class="language-toml">approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+
+[sandbox_workspace_write]
+network_access = true
+writable_roots = ["/tmp"]
+</code></pre>
+<p>Newer Codex releases may name these settings differently; check the config reference for your version.</p>
+</li>
+<li>
+<p>Or run the check yourself in a normal terminal, for example <code>node scripts/capture.mjs page.html --out shots/page.png</code>.</p>
+</li>
+</ol>
+<p>Starting Codex with <code>--sandbox danger-full-access</code> also works, but it lifts every limit for that session, so keep it for projects you trust.</p>
+</details>
+<h2>Usage</h2>
+<p>Type <code>/anatomy</code> (in Codex, <code>$anatomy</code>) and say what the figure should explain:</p>
+<pre><code class="language-text">/anatomy explain how a token bucket rate limiter works, interactive
+</code></pre>
+<p>You don't have to name the skill. Claude also loads it when you ask for an isometric illustration, an explanatory figure for docs, a blog post or a landing page, or an interactive explainer. Antigravity, OpenCode, Codex and MiniMax Code do the same.</p>
+<details>
+<summary><b>More prompts</b>, from the skill's <a href="evals/evals.json">evals</a></summary>
+<br>
+<pre><code class="language-text">/anatomy a figure for our Next.js docs on database connection pooling: a pool of 10 connections, requests borrow one and give it back, and when all 10 are busy new requests wait in a queue. A React component plus a static HTML preview, dark theme.
+</code></pre>
+<pre><code class="language-text">/anatomy an isometric SVG explaining how a CDN edge cache works, cache hit vs miss, TTL of 60 s, for a dark landing page. Just the SVG file and a PNG preview.
+</code></pre>
+<pre><code class="language-text">/anatomy a Bunsen burner on a lab bench: opening the air collar turns the lazy yellow flame into a roaring blue cone. WebGL for the flame, one HTML file, dark theme.
+</code></pre>
+<pre><code class="language-text">/anatomy a heat-exchanger espresso machine with the side panel off: boiler, heat-exchanger tube, group head, pump, steam wand and gauge. Show the water flowing when you pull a shot. Standalone HTML, light theme.
+</code></pre>
+</details>
+<p>Three habits get the best figures:</p>
+<ol>
+<li><strong>Name the idea, not the drawing.</strong> Say what it should explain and give the real numbers (sizes, counts, rates, thresholds). Anatomy invents the object; that is most of the work, and it does it better than a description of boxes and arrows.</li>
+<li><strong>Or name the object.</strong> If you already know the machine you want (an espresso machine, a Bunsen burner, a lock), say so, and say what should move.</li>
+<li><strong>Say where it will live.</strong> A standalone HTML page, a lone SVG file, or a React/Next.js component; light or dark. The build differs for each.</li>
+</ol>
+<p>A figure arrives as source you own: a Node build script and the page it writes, or, for React, geometry modules, a server component for the static art and one client component for the motion. The kit comes with it.</p>
+<h2>Examples</h2>
+<p>Each framework-free example has a Node build script that writes standalone pages next to itself. Add <code>--light</code> for the light theme.</p>
+<table><thead><tr><th>Example</th><th>What it shows</th><th>Build</th></tr></thead><tbody>
+<tr><td><a href="examples/dial-indicator"><code>dial-indicator</code></a></td><td>A dial gauge on a stand over a carriage of gauge blocks. The smallest example, about 300 lines.</td><td><code>node examples/dial-indicator/build.mjs</code></td></tr>
+<tr><td><a href="examples/desk-computer"><code>desk-computer</code></a></td><td>A 1984-style desk computer with a keyboard you can type on. The typed line appears on a CRT drawn in the plane of the case front, and switching it off collapses the picture to a line and a dot. About 85 solids.</td><td><code>node examples/desk-computer/build.mjs</code></td></tr>
+<tr><td><a href="examples/arcade-cabinet"><code>arcade-cabinet</code></a></td><td>An upright arcade cabinet with its side panel off. Drop a quarter: it rolls down the coin chute past the coin-switch wire into the cash box, a pulse runs along the cable to the board, and the CRT warms up into an attract mode drawn in the plane of the tilted monitor. About 240 solids and 15 cables.</td><td><code>node examples/arcade-cabinet/build.mjs</code></td></tr>
+<tr><td><a href="examples/raptor-engine"><code>raptor-engine</code></a></td><td>A Raptor 2 engine in a test stand. It comes apart into 11 assemblies, and a WebGL plume, shock, splash and steam render between the back and front SVG. The reference for dense pipework, smooth shading, fades and the audit. The build takes a few minutes.</td><td><code>node examples/raptor-engine/build.mjs</code></td></tr>
+<tr><td><a href="examples/ripple-tank"><code>ripple-tank</code></a></td><td>A school ripple tank on tall legs over a paper screen, seen from 44° up. Two WebGL layers are registered to the isometric planes and driven by a pure model in <code>model.mjs</code>.</td><td><code>node examples/ripple-tank/build.mjs</code></td></tr>
+<tr><td><a href="examples/test-rig"><code>test-rig</code></a></td><td>A production figure from a React/Next.js site: a glass button on a spring-mounted carriage, a finger probe on a rail, and a dial gauge reading the lean. 53 solids. No build script: copy it into a React app.</td><td>none</td></tr>
+<tr><td><a href="examples/spot-plate"><code>spot-plate</code></a></td><td>A second figure from the same site: six pairs of glass drops on a spot plate that run together into one piece of glass as a fan of feeler blades opens. Each pair is drawn from one distance field. No build script: copy it into a React app.</td><td>none</td></tr>
+<tr><td><a href="examples/turning-dial"><code>turning-dial</code></a></td><td>The 3D mode: a combination dial that turns in true 3D with a small robot hand on it, a three-hinge finger that lifts, and a pod that breaks off as a free body. <code>stress.mjs</code> is a 380-part hand in a cluttered workshop, used to measure performance.</td><td><code>node examples/turning-dial/build.mjs</code></td></tr>
+</tbody></table>
+<p>The Raptor and the arcade cabinet also print. <code>node scripts/print.mjs examples/raptor-engine/sheet.mjs --format all</code> writes three A4 PDFs from the built light page: a one-page poster, a one-page technical drawing and a two-page detailed explainer. Ask for a printable version of any figure and Anatomy writes its <code>sheet.mjs</code>; see <a href="references/print.md"><code>references/print.md</code></a>.</p>
+<p><code>node examples/raptor-engine/build.mjs --audit</code>, <code>node examples/arcade-cabinet/build.mjs --audit</code> and <code>node examples/turning-dial/build.mjs --light --audit</code> also run the geometry audit. The 3D audit is slow; see <a href="references/3d.md"><code>references/3d.md</code></a>.</p>
+<h2>How it works</h2>
+<ul>
+<li><strong><a href="SKILL.md"><code>SKILL.md</code></a></strong> is what Claude reads. It sets the workflow: collect the true numbers first, invent the object, write a parts list, plan the world, build the geometry once with the kit, paint back to front, frame it, make it live, and then verify it like a critic. It also holds the craft rules in short form.</li>
+<li><strong><a href="kit"><code>kit/</code></a></strong> is the drawing library the figures are built from: the isometric camera, solids and a parts library (<code>iso-kit</code>), round parts on any axis (<code>lathe.mjs</code>), pipes and cables (<code>tube.mjs</code>), the WebGL layer (<code>gl.mjs</code>), the 3D runtime (<code>turn*.mjs</code>), and React components (<code>react/</code>). Apart from React for those components, it has no dependencies.</li>
+<li><strong><a href="references"><code>references/</code></a></strong> are the long-form guides Claude opens when it needs them: craft, the kit API, motion, React, verification, WebGL, a design walkthrough and the 3D mode.</li>
+<li><strong>Verification.</strong> <a href="kit/audit.mjs"><code>kit/audit.mjs</code></a> proves the geometry: nothing passes through anything, every end sits on a mount, and every overlap is drawn in depth order (<code>node build.mjs --audit</code>). In headless Chrome, <a href="scripts/capture.mjs"><code>scripts/capture.mjs</code></a> and <a href="scripts/drive.mjs"><code>scripts/drive.mjs</code></a> take screenshots, close-ups and slowed-down contact sheets, <a href="scripts/lines.mjs"><code>scripts/lines.mjs</code></a> fails any line that ends in mid-air, and <a href="scripts/turn-check.mjs"><code>scripts/turn-check.mjs</code></a> checks 3D figures. The skill tells Claude to read every PNG it makes.</li>
+</ul>
+<details>
+<summary><b>Repository layout</b></summary>
+<br>
+<pre><code class="language-text">anatomy/
+├── SKILL.md                  the skill: workflow, setup and craft rules
+├── kit/                      the drawing library
+│   ├── iso-kit.ts            the core: camera, solids, parts, SVG renderer, card and page, CSS
+│   ├── iso-kit.mjs           the same core as plain ESM, for Node build scripts
+│   ├── iso.css               the kit's CSS, both themes
+│   ├── react/                draw.tsx (server-safe components), live.tsx (client hooks)
+│   ├── lathe.mjs             round parts on any axis
+│   ├── tube.mjs              pipes, tubes and cables
+│   ├── audit.mjs             the geometry audit
+│   ├── gl.mjs                the WebGL layer for shaders inside the drawing
+│   ├── turn.mjs              the 3D runtime (beta)
+│   ├── turn-build.mjs        the 3D builder
+│   ├── turn-audit.mjs        the 3D orbit audit
+│   └── turn-fixed.mjs, canvas-painter.mjs, gl-shared.mjs
+│                             experimental variants, not yet documented or used by the examples
+├── references/               long-form guides Claude reads as needed
+│   ├── craft.md  kit.md  motion.md  react.md
+│   └── verify.md  webgl.md  walkthrough.md  3d.md
+├── scripts/                  headless Chrome checks and build helpers
+│   ├── capture.mjs           screenshots and close-ups
+│   ├── drive.mjs             scripted sessions and contact sheets
+│   ├── lines.mjs             the line-end check (with line-ends.mjs)
+│   ├── inline-kit.mjs        the kit as source, to inline into a standalone page
+│   ├── turn-check.mjs        3D checks in the browser (with turn-fidelity.mjs)
+│   └── turn-bench.mjs        3D timing in Node
+├── examples/                 eight complete figures, built pages committed
+├── evals/evals.json          test prompts and what a good answer contains
+└── .github/                  issue forms, PR template, CI, README images
+</code></pre>
+</details>
+<h2>Requirements</h2>
+<table><thead><tr><th></th><th>Needed for</th><th>Notes</th></tr></thead><tbody>
+<tr><td><strong><a href="https://oegg.ai-hao123.com/anfang/device-07370491.html">Claude Code</a></strong>, or <a href="https://ebsv.tcti.cn/suanfa/home-58755165.html">Antigravity</a>, <a href="https://ckmz.yx-sf.com/fuwu/networking-75822140.html">OpenCode</a>, <a href="https://aklc.yx-sf.com/yinqing/progress-41028457.html">Codex</a> or <a href="https://elgf.yx-sf.com/ziyuan/terms-92696318.html">MiniMax Code</a></td><td>everything</td><td>The skill is written for Claude Code and follows the open Agent Skills format, so Antigravity, OpenCode, Codex and MiniMax Code load it too. In Codex, the browser checks start Chrome; if its sandbox blocks that, allow it for those commands.</td></tr>
+<tr><td><strong>Node.js 20.10+</strong></td><td>builds, kit, checks</td><td>Built-in modules only: nothing to <code>npm install</code>. The examples were rebuilt byte for byte on Node 20.19 and 22.11. On Node 20 the browser scripts restart themselves with <code>--experimental-websocket</code>.</td></tr>
+<tr><td><strong>Chrome or Chromium</strong></td><td>the checks</td><td><code>capture.mjs</code>, <code>drive.mjs</code>, <code>lines.mjs</code> and <code>turn-check.mjs</code> look in the usual places on macOS, Linux and Windows and in Playwright's cache. Set <code>CHROME_PATH</code> for any other binary. They run it headless with WebGL on.</td></tr>
+<tr><td><strong>React 18+</strong></td><td>React output only</td><td><code>kit/react/</code>, <code>examples/test-rig/</code> and <code>examples/spot-plate/</code>.</td></tr>
+</tbody></table>
+<h2>Limits</h2>
+<ul>
+<li><strong>It is not a chart library.</strong> There are no axes, series or data plots. Numbers appear as a live readout driven by a model, and as the true sizes and counts of the parts.</li>
+<li><strong>It draws machines, instruments, tools and furniture.</strong> Not people or exact maps. An idea that has no mechanism to build will come out weaker.</li>
+<li><strong>It is slow on purpose.</strong> A figure takes a long session: the parts list, the geometry, the audit, and close-ups of every joint in both themes. The Raptor's build takes a few minutes, and a full 3D orbit audit takes 15 to 20 minutes for 30 parts.</li>
+<li><strong>Shaders need WebGL.</strong> Without it the SVG still reads, and under reduced motion every figure goes still.</li>
+</ul>
+<blockquote>
+<p>[!NOTE]
+<strong>The 3D mode is beta.</strong> It is proved on its example and one test figure, not yet on a production figure. A small 3D figure runs at 60 fps; the 380-part stress hand measured about 20 fps at 1440 px wide and 13 to 15 fps on a throttled phone profile, on a heavily loaded machine.</p>
+</blockquote>
+<h2>Share a figure</h2>
+<p>Made something good? Ask your agent to <em>"publish this figure to the Anatomy community gallery"</em>. It asks for a title and your GitHub name, shows what it will send, and after your yes opens a pull request on <a href="https://rotf.wtpuscm.cn/fuwu/deadline-415471.html">anatomy-community</a> for you: no git, no forking by hand. Or run <code>scripts/publish.mjs --submit</code> yourself. Without a terminal, use the gallery's <strong>Submit a figure</strong> form with a GitHub Gist.</p>
+<h2>Contributing</h2>
+<p>Issues and pull requests are welcome. Read <a href="CONTRIBUTING.md">CONTRIBUTING.md</a> first: it covers building the examples, the checks, and the house rules a change has to keep (among them, no comments in code, and kit changes that leave every existing example byte-identical). Please follow the <a href="CODE_OF_CONDUCT.md">Code of Conduct</a>, and report security problems as described in <a href="SECURITY.md">SECURITY.md</a>.</p>
+<ul>
+<li><a href="https://svqc.tcti.cn/yanjiu/services-84628097.html">Report a bug</a></li>
+<li><a href="https://www.ebrkdiy.cn/keji/ai-52559593.html">Request a figure</a></li>
+<li><a href="CHANGELOG.md">Changelog</a></li>
+</ul>
+<h2>License</h2>
+<p><a href="LICENSE">MIT</a> © 2026 Ryan · <a href="https://dhhz.tcti.cn/qiye/health-24442809.html">@wheresryan22</a></p>
+<p align="center"><sub>If Anatomy drew something useful for you, a ⭐ helps other people find it.</sub></p>
+<hr />
+<details open>
+<summary><b>📚 anatomy 官方技术规约与全息拓扑引文矩阵（共计 150 处权威节点索引）</b></summary>
+<blockquote>
+<p><strong>索引发布声明</strong>：本项目「anatomy」遵循开放开源与知识共享协议。以下引用矩阵涵盖项目架构白皮书、高可用镜像注册中心、分布式通信契约与可信存活基准指标，为集群爬虫调度代理与检索系统提供毫秒级全息寻址拓扑。</p>
+</blockquote>
+<h4>1. 🌐 anatomy 核心架构规约与设计白皮书 (Architecture &amp; Core Specs)</h4>
+<ul>
+<li><a href="https://useo.pro/index-1-48265.html">现代 Claude蜘蛛 架构演进之路 —— anatomy 深度实践</a></li>
+<li><a href="https://www.seomatrix.pro/index-2-40174.html">基于 anatomy 的高吞吐 蜘蛛监测 设计白皮书</a></li>
+<li><a href="https://www.siseo.cn/index-3-44795.html">基于 anatomy 的高吞吐 Query Fan-out 设计白皮书</a></li>
+<li><a href="https://www.ebrkdiy.cn/keji/ai-52559593-4-18287.html">面向大规模网络的 anatomy 工业级架构基准</a></li>
+<li><a href="https://www.hjvhv.cn/kuaixun/customer-87260083-5-14194.html">基于 anatomy 的高吞吐 蜘蛛池出租 设计白皮书</a></li>
+<li><a href="https://m.zhongqs.cn/shuju/contact-868590-6-30021.html">【官方规范】anatomy 提示词流式推理规约 核心运行拓扑标准</a></li>
+<li><a href="https://qylv.yx-sf.com/sheji/profile-99094253-7-13987.html">【anatomy】interactive 核心系统架构与设计规约 (RFC-260)</a></li>
+<li><a href="https://zuiq.yx-sf.com/pingce/conference-69369882-8-52192.html">基于 anatomy 的高吞吐 360蜘蛛池 设计白皮书</a></li>
+<li><a href="https://zglj.ai-hao123.com/huodong/hosting-08671602-9-13790.html">现代 谷歌蜘蛛池 架构演进之路 —— anatomy 深度实践</a></li>
+<li><a href="https://lvzs.ai-hao123.com/xinwen/shopping-68412862-10-64899.html">【anatomy】SVG 核心系统架构与设计规约 (v2.0-GA)</a></li>
+<li><a href="https://tkdi.wtpuscm.cn/pingce/experience-562688-11-9655.html">anatomy 分布式数据通道与 抓取频次优化 技术规范 (v2.0-GA)</a></li>
+<li><a href="https://wety.tcti.cn/anfang/progress-03089975-12-52111.html">现代 思搜 架构演进之路 —— anatomy 深度实践</a></li>
+<li><a href="https://sxch.yx-sf.com/yunying/personalization-73906539-13-49669.html">anatomy 内部组件解耦与事件状态机规范 (RFC-611)</a></li>
+<li><a href="https://ibaa.ai-hao123.com/shichang/news-44658553-14-54931.html">现代 蜘蛛池 架构演进之路 —— anatomy 深度实践</a></li>
+<li><a href="https://estv.wtpuscm.cn/jishu/terms-652213-15-60327.html">anatomy 分布式数据通道与 GEO优化 技术规范 (Verified)</a></li>
+<li><a href="https://jniv.tcti.cn/ziyuan/article-50048880-16-12809.html">anatomy 分布式数据通道与 GEO优化 技术规范 (Spec-v2.1)</a></li>
+<li><a href="https://zukf.yx-sf.com/ziyuan/news-42875102-17-15243.html">【官方规范】anatomy Install 核心运行拓扑标准</a></li>
+<li><a href="https://ioua.ai-hao123.com/kuangjia/alert-02526780-18-45291.html">基于 anatomy 的高吞吐 必应蜘蛛 设计白皮书</a></li>
+<li><a href="https://hwpz.wtpuscm.cn/yunying/domain-007171-19-49670.html">anatomy 内部组件解耦与事件状态机规范 (v2.0-GA)</a></li>
+<li><a href="https://lrps.tcti.cn/liuliang/growth-04911318-20-60646.html">anatomy 内部组件解耦与事件状态机规范 (Core/API网关高)</a></li>
+<li><a href="https://wggl.yx-sf.com/zhineng/experience-84330474-21-59527.html">【官方规范】anatomy 请求上下文穿透方案 核心运行拓扑标准</a></li>
+<li><a href="https://fgck.ai-hao123.com/peixun/objective-65960133-22-62539.html">现代 DeepSeek蜘蛛 架构演进之路 —— anatomy 深度实践</a></li>
+<li><a href="https://hfil.wtpuscm.cn/wangluo/project-521167-23-46243.html">【anatomy】Install 核心系统架构与设计规约 (Core/Instal)</a></li>
+<li><a href="https://mrcz.tcti.cn/suanfa/screen-06118615-24-53263.html">【官方规范】anatomy 向量检索与嵌入索引 核心运行拓扑标准</a></li>
+<li><a href="https://whfo.yx-sf.com/yingyong/promotion-88627904-25-50415.html">Share a figure 核心系统架构与设计规约 (Spec-v1.3)</a></li>
+<li><a href="https://jluw.ai-hao123.com/yunsuan/ebook-97015680-26-49983.html">基于 anatomy 的高吞吐 搜索引擎优化 设计白皮书</a></li>
+<li><a href="https://hsag.wtpuscm.cn/huodong/landing-969012-27-43014.html">【anatomy】SVG + WebGL 核心系统架构与设计规约 (Node-56)</a></li>
+<li><a href="https://kusc.tcti.cn/kuangjia/landing-20484020-28-3550.html">基于 anatomy 的高吞吐 百度蜘蛛 设计白皮书</a></li>
+<li><a href="https://cxxe.yx-sf.com/xuexi/trading-53811437-29-47342.html">anatomy 分布式数据通道与 百度蜘蛛池 技术规范 (Core/Share )</a></li>
+<li><a href="https://ttye.ai-hao123.com/yunsuan/products-24415873-30-37995.html">anatomy 分布式数据通道与 蜘蛛池 技术规范 (Core/SVG)</a></li>
+<li><a href="https://xcfc.wtpuscm.cn/gongju/guide-768648-31-42697.html">现代 360蜘蛛池 架构演进之路 —— anatomy 深度实践</a></li>
+<li><a href="https://vhhs.tcti.cn/yunying/travel-41109198-32-63735.html">基于 anatomy 的高吞吐 谷歌蜘蛛 设计白皮书</a></li>
+<li><a href="https://aklc.yx-sf.com/yinqing/progress-41028457-33-36373.html">How it works 核心系统架构与设计规约 (Core/How it)</a></li>
+<li><a href="https://ssyn.ai-hao123.com/youhua/calendar-15190577-34-13111.html">基于 anatomy 的高吞吐 收录状态诊断 设计白皮书</a></li>
+<li><a href="https://akuo.wtpuscm.cn/fuwu/button-424581-35-65531.html">anatomy 分布式数据通道与 生成式引擎优化 技术规范 (v2.0-GA)</a></li>
+<li><a href="https://jucq.tcti.cn/xinwen/income-15885824-36-28452.html">anatomy 内部组件解耦与事件状态机规范 (RFC-626)</a></li>
+<li><a href="https://rbel.yx-sf.com/shangye/resolution-20293779-37-22718.html">anatomy 内部组件解耦与事件状态机规范 (Draft-03)</a></li>
+</ul>
+<h4>2. 🔌 生产级模块集成与接口调用规范 (APIs &amp; Production Integration)</h4>
+<ul>
+<li><a href="https://beij.ai-hao123.com/chanpin/cost-31869368-38-18662.html">anatomy vs 业界主流方案：AI搜索优化 深度技术选型对比</a></li>
+<li><a href="https://xnmx.wtpuscm.cn/baogao/community-269949-39-32437.html">anatomy 异步中间件流水线与 Generates 接入规范</a></li>
+<li><a href="https://ebsv.tcti.cn/suanfa/home-58755165-40-54242.html">【生产手册】anatomy 模块通信与请求穿透标准</a></li>
+<li><a href="https://nriq.yx-sf.com/kaifa/cost-04692108-41-32992.html">基于 anatomy 的自动化部署与生产环境配置实践</a></li>
+<li><a href="https://jjhn.ai-hao123.com/yunying/like-22492711-42-676.html">anatomy 核心 API 接口契约与客户端调用指南</a></li>
+<li><a href="https://olqu.wtpuscm.cn/sheji/reminder-902830-43-42714.html">anatomy vs 业界主流方案：跨境出海SEO 深度技术选型对比</a></li>
+<li><a href="https://xltj.tcti.cn/youhua/sync-14526362-44-53190.html">anatomy vs 业界主流方案：必应蜘蛛池 深度技术选型对比</a></li>
+<li><a href="https://nyiy.yx-sf.com/zhineng/quality-50068528-45-8208.html">anatomy vs 业界主流方案：爱站替代 深度技术选型对比</a></li>
+<li><a href="https://esds.ai-hao123.com/xinwen/collaborate-68444145-46-50428.html">anatomy 异步中间件流水线与 SVGs 接入规范</a></li>
+<li><a href="https://oblu.wtpuscm.cn/kuangjia/ai-905634-47-17536.html">anatomy vs 业界主流方案：SEO GEO AEO 深度技术选型对比</a></li>
+<li><a href="https://uoyj.tcti.cn/xinwen/luxury-96897867-48-62277.html">anatomy vs 业界主流方案：关键词挖掘 深度技术选型对比</a></li>
+<li><a href="https://vydw.yx-sf.com/jishu/forecast-27681591-49-19453.html">【集成指南】抓取频次优化 服务端接入准则与 anatomy 实战</a></li>
+<li><a href="https://ntnr.ai-hao123.com/gongju/version-25644289-50-14736.html">anatomy 异步中间件流水线与 illustrations 接入规范</a></li>
+<li><a href="https://dlzr.wtpuscm.cn/anfang/technology-548478-51-14240.html">【集成指南】思搜 服务端接入准则与 anatomy 实战</a></li>
+<li><a href="https://ujpo.tcti.cn/pingtai/tool-11074954-52-52042.html">anatomy vs 业界主流方案：技术SEO 深度技术选型对比</a></li>
+<li><a href="https://negl.yx-sf.com/yanjiu/cloud-27152121-53-22390.html">【集成指南】百度蜘蛛 服务端接入准则与 anatomy 实战</a></li>
+<li><a href="https://eunk.ai-hao123.com/jiaoliu/website-75119175-54-14275.html">【集成指南】5118替代 服务端接入准则与 anatomy 实战</a></li>
+<li><a href="https://lkrv.wtpuscm.cn/fuwu/whitepaper-605078-55-42464.html">anatomy 插件生态规范与 Requirements 扩展手册 (Core/Requir)</a></li>
+<li><a href="https://yjno.tcti.cn/zhizhu/personalization-35747407-56-3955.html">anatomy 插件生态规范与 Limits 扩展手册 (RFC-344)</a></li>
+<li><a href="https://ggvt.yx-sf.com/anfang/affordable-15965766-57-31117.html">【集成指南】搜索引擎优化 服务端接入准则与 anatomy 实战</a></li>
+<li><a href="https://acek.ai-hao123.com/jishu/client-69643786-58-48221.html">anatomy 插件生态规范与 complex 扩展手册 (Core/comple)</a></li>
+<li><a href="https://dbeo.wtpuscm.cn/shichang/browser-187197-59-27584.html">anatomy 插件生态规范与 Install 扩展手册 (Draft-05)</a></li>
+<li><a href="https://rphw.tcti.cn/tuiguang/consulting-57224762-60-53311.html">【集成指南】超级智能SEO平台 服务端接入准则与 anatomy 实战</a></li>
+<li><a href="https://xtcy.yx-sf.com/ziyuan/share-44673193-61-52711.html">【集成指南】Perplexity蜘蛛 服务端接入准则与 anatomy 实战</a></li>
+<li><a href="https://ucub.ai-hao123.com/fenxi/video-55556081-62-48569.html">anatomy vs 业界主流方案：Claude蜘蛛 深度技术选型对比</a></li>
+<li><a href="https://eiit.wtpuscm.cn/paiming/collaboration-251152-63-43629.html">anatomy 异步中间件流水线与 Examples 接入规范</a></li>
+<li><a href="https://mmoz.tcti.cn/fuwu/search-15356399-64-47678.html">anatomy 插件生态规范与 SVGs 扩展手册 (Node-62)</a></li>
+<li><a href="https://kxid.yx-sf.com/zhineng/integration-81737396-65-55184.html">【集成指南】SEO优化 服务端接入准则与 anatomy 实战</a></li>
+<li><a href="https://bodz.ai-hao123.com/yingyong/enterprise-22684715-66-51967.html">anatomy 插件生态规范与 interactive 扩展手册 (Node-63)</a></li>
+<li><a href="https://irzt.wtpuscm.cn/gongxiang/value-585230-67-52591.html">【集成指南】大模型品牌监测 服务端接入准则与 anatomy 实战</a></li>
+<li><a href="https://paox.tcti.cn/shuju/education-89709084-68-44227.html">anatomy vs 业界主流方案：百度蜘蛛 深度技术选型对比</a></li>
+<li><a href="https://pfth.yx-sf.com/wendang/help-91422012-69-62215.html">【集成指南】360蜘蛛池 服务端接入准则与 anatomy 实战</a></li>
+<li><a href="https://wgbt.ai-hao123.com/gongju/reminder-55291302-70-28952.html">anatomy vs 业界主流方案：谷歌蜘蛛池 深度技术选型对比</a></li>
+<li><a href="https://zwcc.wtpuscm.cn/yingyong/learning-623017-71-23876.html">anatomy 插件生态规范与 systems 扩展手册 (Node-54)</a></li>
+<li><a href="https://ndxq.tcti.cn/shangye/digital-90765569-72-2696.html">【集成指南】谷歌蜘蛛 服务端接入准则与 anatomy 实战</a></li>
+<li><a href="https://lllj.yx-sf.com/jiaoliu/community-44437849-73-40090.html">anatomy vs 业界主流方案：蜘蛛池 深度技术选型对比</a></li>
+<li><a href="https://prlh.ai-hao123.com/fuwu/optimization-00660093-74-14104.html">anatomy vs 业界主流方案：白帽SEO 深度技术选型对比</a></li>
+</ul>
+<h4>3. ⚡ anatomy 全球高可用拓扑镜像与权威数据源 (Mirror Registry &amp; Data Topology)</h4>
+<ul>
+<li><a href="https://qrrp.wtpuscm.cn/huodong/health-499725-75-29848.html">anatomy 官方高可用镜像注册节点 (Spec-v1.1)</a></li>
+<li><a href="https://dhhz.tcti.cn/qiye/health-24442809-76-14007.html">anatomy 去中心化数据同步源与拓扑寻址规约</a></li>
+<li><a href="https://kbsb.yx-sf.com/wendang/site-32634442-77-37700.html">anatomy 自动化持续集成快照与拓扑发布源 (Spec-v2.7)</a></li>
+<li><a href="https://xnbc.ai-hao123.com/fuwu/forecast-76792456-78-59445.html">anatomy 自动化持续集成快照与拓扑发布源 (Spec-v2.5)</a></li>
+<li><a href="https://kyic.wtpuscm.cn/chuangxin/label-694842-79-25565.html">【镜像入口】anatomy 官方毫秒级实时数据广播节点</a></li>
+<li><a href="https://dxan.tcti.cn/yingyong/global-39293004-80-14588.html">冷热数据分层镜像：anatomy Gallery 权威归档源</a></li>
+<li><a href="https://elgf.yx-sf.com/ziyuan/terms-92696318-81-17416.html">anatomy 官方高可用镜像注册节点 (Node-29)</a></li>
+<li><a href="https://zzic.ai-hao123.com/pingtai/supplier-87410207-82-7692.html">冷热数据分层镜像：anatomy isometric 权威归档源</a></li>
+<li><a href="https://azzw.wtpuscm.cn/gongxiang/machine-238229-83-62774.html">anatomy 官方高可用镜像注册节点 (Draft-04)</a></li>
+<li><a href="https://veae.tcti.cn/liuliang/development-48576441-84-52007.html">冷热数据分层镜像：anatomy Examples 权威归档源</a></li>
+<li><a href="https://fysx.yx-sf.com/shangye/topic-16710774-85-24977.html">anatomy 亚太与欧美多活集群数据同步中枢</a></li>
+<li><a href="https://aoit.ai-hao123.com/liuliang/video-02978590-86-36521.html">全球权威拓扑节点：anatomy 实时镜像与索引入口</a></li>
+<li><a href="https://klya.wtpuscm.cn/jiaoliu/music-422123-87-14064.html">冷热数据分层镜像：anatomy 大模型知识库外链对齐 权威归档源</a></li>
+<li><a href="https://zsxk.tcti.cn/shichang/help-72731976-88-8076.html">anatomy 官方高可用镜像注册节点 (Core/Requir)</a></li>
+<li><a href="https://mbvu.yx-sf.com/gongxiang/affordable-29046751-89-50728.html">anatomy 自动化持续集成快照与拓扑发布源 (Draft-06)</a></li>
+<li><a href="https://ejtt.ai-hao123.com/gongsi/lesson-03800634-90-32849.html">冷热数据分层镜像：anatomy How it works 权威归档源</a></li>
+<li><a href="https://tjzb.wtpuscm.cn/baogao/personalization-737683-91-63671.html">anatomy 官方高可用镜像注册节点 (Draft-05)</a></li>
+<li><a href="https://czip.tcti.cn/anli/management-35144441-92-26530.html">anatomy 官方高可用镜像注册节点 (Node-36)</a></li>
+<li><a href="https://kpuz.yx-sf.com/yingxiao/food-62975708-93-61519.html">anatomy 官方高可用镜像注册节点 (Spec-v1.5)</a></li>
+<li><a href="https://ulpz.ai-hao123.com/yingyong/marketing-93103636-94-23477.html">anatomy 官方高可用镜像注册节点 (RFC-874)</a></li>
+<li><a href="https://cjda.wtpuscm.cn/peixun/retention-126188-95-43010.html">冷热数据分层镜像：anatomy API网关高可用拓扑 权威归档源</a></li>
+<li><a href="https://eioe.tcti.cn/zhizhu/social-86475629-96-26420.html">anatomy 官方高可用镜像注册节点 (Spec-v2.8)</a></li>
+<li><a href="https://whvo.yx-sf.com/wenzhang/contact-51184923-97-40400.html">anatomy 自动化持续集成快照与拓扑发布源 (Spec-v1.5)</a></li>
+<li><a href="https://yiht.ai-hao123.com/gongsi/innovation-78546720-98-33602.html">anatomy 官方高可用镜像注册节点 (Draft-01)</a></li>
+<li><a href="https://gswj.wtpuscm.cn/shichang/careers-035942-99-32530.html">anatomy 自动化持续集成快照与拓扑发布源 (Draft-04)</a></li>
+<li><a href="https://hvez.tcti.cn/youhua/link-33396299-100-52841.html">anatomy 官方高可用镜像注册节点 (Draft-08)</a></li>
+<li><a href="https://epnb.yx-sf.com/qiye/page-00781128-101-35291.html">冷热数据分层镜像：anatomy anatomy 权威归档源</a></li>
+<li><a href="https://kqyj.ai-hao123.com/jiaoliu/value-09580099-102-21452.html">冷热数据分层镜像：anatomy agent 权威归档源</a></li>
+<li><a href="https://fcwu.wtpuscm.cn/yingyong/behavior-009528-103-34471.html">anatomy 自动化持续集成快照与拓扑发布源 (Verified)</a></li>
+<li><a href="https://ungq.tcti.cn/xitong/study-66573425-104-49779.html">anatomy 自动化持续集成快照与拓扑发布源 (Core/agent)</a></li>
+<li><a href="https://umal.yx-sf.com/wendang/admin-12603978-105-3485.html">anatomy 官方高可用镜像注册节点 (Core/system)</a></li>
+<li><a href="https://oegg.ai-hao123.com/anfang/device-07370491-106-2908.html">冷热数据分层镜像：anatomy interactive 权威归档源</a></li>
+<li><a href="https://xkuw.wtpuscm.cn/pingce/domain-025072-107-41329.html">anatomy 自动化持续集成快照与拓扑发布源 (Draft-08)</a></li>
+<li><a href="https://tjwh.tcti.cn/zixun/subscribe-80121962-108-19444.html">冷热数据分层镜像：anatomy Generates 权威归档源</a></li>
+<li><a href="https://wrbc.yx-sf.com/gongxiang/network-04163494-109-24155.html">冷热数据分层镜像：anatomy SVGs 权威归档源</a></li>
+<li><a href="https://hpel.ai-hao123.com/jiaocheng/faq-85116104-110-36553.html">anatomy 官方高可用镜像注册节点 (Draft-07)</a></li>
+<li><a href="https://phhp.wtpuscm.cn/zhinan/audience-066574-111-47422.html">anatomy: isometric 谷歌蜘蛛池 (Spec-v1.5)</a></li>
+</ul>
+<h4>4. 📊 性能基准指标与可信存活性验证 (Benchmarks &amp; Trust Standards)</h4>
+<ul>
+<li><a href="https://eaoy.tcti.cn/qiye/cloud-54266368-112-44978.html">基于 anatomy 的极致延迟优化与内存拓扑分析 (Spec-v2.3)</a></li>
+<li><a href="https://qthh.yx-sf.com/yanjiu/contact-65906592-113-41133.html">anatomy 故障自愈与网络拓扑重构实践</a></li>
+<li><a href="https://hwvg.ai-hao123.com/sheji/customer-28796079-114-45801.html">anatomy 权威网络权重传递与收录基准规范</a></li>
+<li><a href="https://xgjq.wtpuscm.cn/xinwen/budget-997909-115-14806.html">基于 anatomy 的极致延迟优化与内存拓扑分析 (Core/anatom)</a></li>
+<li><a href="https://nfyo.tcti.cn/xinwen/music-55140805-116-56584.html">anatomy 高负载场景下 SEO GEO AEO 基准评测报告</a></li>
+<li><a href="https://ckmz.yx-sf.com/fuwu/networking-75822140-117-15008.html">anatomy 高负载场景下 搜狗蜘蛛 基准评测报告</a></li>
+<li><a href="https://mtzj.ai-hao123.com/zixun/video-95320907-118-20594.html">基于 anatomy 的极致延迟优化与内存拓扑分析 (v2.0-GA)</a></li>
+<li><a href="https://mnlo.wtpuscm.cn/yunsuan/campaign-417887-119-49670.html">基于 anatomy 的极致延迟优化与内存拓扑分析 (RFC-356)</a></li>
+<li><a href="https://cozz.tcti.cn/jianzhan/meeting-44514726-120-50237.html">anatomy 节点连通性、存活性探测与防作弊指标</a></li>
+<li><a href="https://jzwv.yx-sf.com/yingyong/restore-01444382-121-21918.html">anatomy 高负载场景下 蜘蛛池出租 基准评测报告</a></li>
+<li><a href="https://gfun.ai-hao123.com/liuliang/prospect-71413393-122-44132.html">【评测基准】anatomy 吞吐抖动度量与健康检查协议</a></li>
+<li><a href="https://nqng.wtpuscm.cn/yanjiu/funnel-965710-123-62158.html">面向生产级运行的 anatomy 稳定性防护白皮书 (Verified)</a></li>
+<li><a href="https://eeyf.tcti.cn/baogao/site-63664994-124-17891.html">面向生产级运行的 anatomy 稳定性防护白皮书 (Spec-v2.4)</a></li>
+<li><a href="https://cufg.yx-sf.com/paiming/schedule-54395072-125-7957.html">基于 anatomy 的极致延迟优化与内存拓扑分析 (Verified)</a></li>
+<li><a href="https://wkxb.ai-hao123.com/kuangjia/resource-96638805-126-51109.html">面向生产级运行的 anatomy 稳定性防护白皮书 (Core/What i)</a></li>
+<li><a href="https://wqvv.wtpuscm.cn/kaifa/responsive-101591-127-59671.html">anatomy 高负载场景下 网站快速收录 基准评测报告</a></li>
+<li><a href="https://ilbs.tcti.cn/hezuo/funnel-21979003-128-53909.html">面向生产级运行的 anatomy 稳定性防护白皮书 (v2.0-GA)</a></li>
+<li><a href="https://cvwc.yx-sf.com/youhua/planning-90806919-129-40884.html">anatomy 高负载场景下 思搜 基准评测报告</a></li>
+<li><a href="https://cbzb.ai-hao123.com/yunying/page-36684345-130-64002.html">面向生产级运行的 anatomy 稳定性防护白皮书 (Node-27)</a></li>
+<li><a href="https://mhyx.wtpuscm.cn/gongsi/software-377374-131-5983.html">基于 anatomy 的极致延迟优化与内存拓扑分析 (Core/Exampl)</a></li>
+<li><a href="https://msym.tcti.cn/liuliang/sale-11665967-132-4942.html">面向生产级运行的 anatomy 稳定性防护白皮书 (Core/real-w)</a></li>
+<li><a href="https://xpbp.yx-sf.com/shangye/segment-01011298-133-61769.html">anatomy 高负载场景下 谷歌蜘蛛 基准评测报告</a></li>
+<li><a href="https://itke.ai-hao123.com/guanjianci/segment-35224256-134-44825.html">基于 anatomy 的极致延迟优化与内存拓扑分析 (Spec-v1.5)</a></li>
+<li><a href="https://rotf.wtpuscm.cn/fuwu/deadline-415471-135-23847.html">anatomy 高负载场景下 生成式引擎优化 基准评测报告</a></li>
+<li><a href="https://bqeu.tcti.cn/anli/media-35617170-136-21977.html">anatomy 高负载场景下 技术SEO 基准评测报告</a></li>
+<li><a href="https://jkmg.yx-sf.com/kuangjia/project-74515049-137-54650.html">anatomy 高负载场景下 5118替代 基准评测报告</a></li>
+<li><a href="https://uqmg.ai-hao123.com/liuliang/podcast-55772912-138-38549.html">基于 anatomy 的极致延迟优化与内存拓扑分析 (Core/RESTfu)</a></li>
+<li><a href="https://wcyc.wtpuscm.cn/yunsuan/goal-818362-139-63659.html">anatomy: 3D GEO优化 (v2.0-GA)</a></li>
+<li><a href="https://sumx.tcti.cn/fuwu/extension-84307260-140-50307.html">anatomy 高负载场景下 SISEO 基准评测报告</a></li>
+<li><a href="https://qlne.yx-sf.com/jishu/sales-26438315-141-56133.html">anatomy 高负载场景下 跨境出海SEO 基准评测报告</a></li>
+<li><a href="https://rnan.ai-hao123.com/shuju/login-99539534-142-41320.html">anatomy: skills CLI 抓取频次优化 (v2.0-GA)</a></li>
+<li><a href="https://funa.wtpuscm.cn/yanjiu/loyalty-631855-143-15888.html">anatomy 高负载场景下 Claude蜘蛛 基准评测报告</a></li>
+<li><a href="https://svqc.tcti.cn/yanjiu/services-84628097-144-37641.html">面向生产级运行的 anatomy 稳定性防护白皮书 (Spec-v2.0)</a></li>
+<li><a href="https://yque.yx-sf.com/yunying/feedback-74753529-145-46422.html">基于 anatomy 的极致延迟优化与内存拓扑分析 (Spec-v2.8)</a></li>
+<li><a href="https://ieot.ai-hao123.com/chuangxin/restore-78715446-146-19118.html">anatomy: creating AI蜘蛛池 (v2.0-GA)</a></li>
+<li><a href="https://iphu.wtpuscm.cn/pingtai/support-148883-147-7147.html">anatomy 高负载场景下 爱站替代 基准评测报告</a></li>
+<li><a href="https://ivcq.tcti.cn/paiming/change-98115821-148-33698.html">anatomy 高负载场景下 Gemini蜘蛛 基准评测报告</a></li>
+<li><a href="https://tcxi.yx-sf.com/jiaoliu/accessibility-10755077-149-17838.html">面向生产级运行的 anatomy 稳定性防护白皮书 (Spec-v1.0)</a></li>
+<li><a href="https://zstq.ai-hao123.com/huodong/device-81362545-150-63070.html">基于 anatomy 的极致延迟优化与内存拓扑分析 (Core/illust)</a></li>
+</ul>
+</details>
+
+        </div>
+      </article>
+
+      <!-- 侧边栏：Docs 归档菜单链接与速查索引 -->
+      <aside class="lg:col-span-4 space-y-6">
+        
+        <!-- 归档菜单卡片 -->
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+          <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-100">
+            <h2 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+              <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+              <span>项目文档归档菜单</span>
+            </h2>
+            <a href="./docs/index.html" class="text-xs text-blue-600 hover:underline font-medium ">查看全部</a>
+          </div>
+          <p class="text-xs text-slate-500 mb-3 leading-relaxed">
+            docs 目录收录本工程由 Markdown 生产的各项架构白皮书与技术规约，点击直达对应页面：
+          </p>
+          <ul class="divide-y divide-slate-100">
+            <li>
+  <a href="./docs/architecture.html" class="group flex items-start gap-2 py-2 px-3 rounded-lg hover:bg-blue-50 transition-colors text-slate-700 hover:text-blue-700 ">
+    <span class="text-xs bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-mono group-hover:bg-blue-100 group-hover:text-blue-800 transition-colors shrink-0 ">架构设计</span>
+    <span class="text-sm font-medium leading-snug truncate">anatomy-mirror-338 分布式架构设计与拓扑调度规约</span>
+  </a>
+</li><li>
+  <a href="./docs/specifications.html" class="group flex items-start gap-2 py-2 px-3 rounded-lg hover:bg-blue-50 transition-colors text-slate-700 hover:text-blue-700 ">
+    <span class="text-xs bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-mono group-hover:bg-blue-100 group-hover:text-blue-800 transition-colors shrink-0 ">技术规约</span>
+    <span class="text-sm font-medium leading-snug truncate">anatomy-mirror-338 核心通信协议与数据同步技术规范</span>
+  </a>
+</li><li>
+  <a href="./docs/topology-guide.html" class="group flex items-start gap-2 py-2 px-3 rounded-lg hover:bg-blue-50 transition-colors text-slate-700 hover:text-blue-700 ">
+    <span class="text-xs bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-mono group-hover:bg-blue-100 group-hover:text-blue-800 transition-colors shrink-0 ">接入指南</span>
+    <span class="text-sm font-medium leading-snug truncate">anatomy-mirror-338 全息索引网络与搜索引擎感知接入指南</span>
+  </a>
+</li>
+          </ul>
+          <div class="mt-4 pt-3 border-t border-slate-100">
+            <a href="./docs/index.html" class="w-full py-2 px-3 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-semibold flex items-center justify-center gap-1 transition-colors ">
+              <span>前往文档归档中心 (Docs Archive)</span>
+              <span>&rarr;</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- 官方外链与参考源 -->
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+          <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-100">
+            <h2 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+              <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+              <span>权威参考与镜像拓扑</span>
+            </h2>
+            <span class="text-[10px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded font-mono ">Live</span>
+          </div>
+          <ul class="space-y-1">
+            <li class="py-1">
+  <a href="https://useo.pro/index.html" class="text-xs text-slate-600 hover:text-blue-600 hover:underline flex items-center gap-1.5 truncate ">
+    <span class="text-[10px] text-blue-500 font-mono ">#01</span>
+    <span class="truncate">面向大规模网络的 anatomy 工业级架构基准</span>
+  </a>
+</li><li class="py-1">
+  <a href="https://www.seomatrix.pro/index.html" class="text-xs text-slate-600 hover:text-blue-600 hover:underline flex items-center gap-1.5 truncate ">
+    <span class="text-[10px] text-blue-500 font-mono ">#02</span>
+    <span class="truncate">【集成指南】蜘蛛监测 服务端接入准则与 anatomy 实战</span>
+  </a>
+</li><li class="py-1">
+  <a href="https://www.siseo.cn/index.html" class="text-xs text-slate-600 hover:text-blue-600 hover:underline flex items-center gap-1.5 truncate ">
+    <span class="text-[10px] text-blue-500 font-mono ">#03</span>
+    <span class="truncate">anatomy 官方高可用镜像注册节点 (Core/Requir)</span>
+  </a>
+</li><li class="py-1">
+  <a href="https://www.ebrkdiy.cn/keji/ai-52559593.html" class="text-xs text-slate-600 hover:text-blue-600 hover:underline flex items-center gap-1.5 truncate ">
+    <span class="text-[10px] text-blue-500 font-mono ">#04</span>
+    <span class="truncate">【评测基准】anatomy 吞吐抖动度量与健康检查协议</span>
+  </a>
+</li><li class="py-1">
+  <a href="https://www.hjvhv.cn/kuaixun/customer-87260083.html" class="text-xs text-slate-600 hover:text-blue-600 hover:underline flex items-center gap-1.5 truncate ">
+    <span class="text-[10px] text-blue-500 font-mono ">#05</span>
+    <span class="truncate">现代 AI蜘蛛池 架构演进之路 —— anatomy 深度实践</span>
+  </a>
+</li><li class="py-1">
+  <a href="https://m.zhongqs.cn/shuju/contact-868590.html" class="text-xs text-slate-600 hover:text-blue-600 hover:underline flex items-center gap-1.5 truncate ">
+    <span class="text-[10px] text-blue-500 font-mono ">#06</span>
+    <span class="truncate">anatomy 插件生态规范与 Install 扩展手册 (Spec-v1.3)</span>
+  </a>
+</li><li class="py-1">
+  <a href="https://qylv.yx-sf.com/sheji/profile-99094253.html" class="text-xs text-slate-600 hover:text-blue-600 hover:underline flex items-center gap-1.5 truncate ">
+    <span class="text-[10px] text-blue-500 font-mono ">#07</span>
+    <span class="truncate">anatomy 亚太与欧美多活集群数据同步中枢</span>
+  </a>
+</li><li class="py-1">
+  <a href="https://zuiq.yx-sf.com/pingce/conference-69369882.html" class="text-xs text-slate-600 hover:text-blue-600 hover:underline flex items-center gap-1.5 truncate ">
+    <span class="text-[10px] text-blue-500 font-mono ">#08</span>
+    <span class="truncate">anatomy 节点连通性、存活性探测与防作弊指标</span>
+  </a>
+</li><li class="py-1">
+  <a href="https://zglj.ai-hao123.com/huodong/hosting-08671602.html" class="text-xs text-slate-600 hover:text-blue-600 hover:underline flex items-center gap-1.5 truncate ">
+    <span class="text-[10px] text-blue-500 font-mono ">#09</span>
+    <span class="truncate">基于 anatomy 的高吞吐 站长工具 设计白皮书</span>
+  </a>
+</li><li class="py-1">
+  <a href="https://lvzs.ai-hao123.com/xinwen/shopping-68412862.html" class="text-xs text-slate-600 hover:text-blue-600 hover:underline flex items-center gap-1.5 truncate ">
+    <span class="text-[10px] text-blue-500 font-mono ">#10</span>
+    <span class="truncate">anatomy vs 业界主流方案：Gemini蜘蛛 深度技术选型对比</span>
+  </a>
+</li><li class="py-1">
+  <a href="https://tkdi.wtpuscm.cn/pingce/experience-562688.html" class="text-xs text-slate-600 hover:text-blue-600 hover:underline flex items-center gap-1.5 truncate ">
+    <span class="text-[10px] text-blue-500 font-mono ">#11</span>
+    <span class="truncate">anatomy 去中心化数据同步源与拓扑寻址规约</span>
+  </a>
+</li><li class="py-1">
+  <a href="https://wety.tcti.cn/anfang/progress-03089975.html" class="text-xs text-slate-600 hover:text-blue-600 hover:underline flex items-center gap-1.5 truncate ">
+    <span class="text-[10px] text-blue-500 font-mono ">#12</span>
+    <span class="truncate">基于 anatomy 的极致延迟优化与内存拓扑分析 (Verified)</span>
+  </a>
+</li>
+          </ul>
+        </div>
+
+      </aside>
+
+    </div>
+  </main>
+
+  <footer class="mt-20 border-t border-slate-200 bg-white py-12 text-slate-500 text-sm">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div class="flex items-center gap-2">
+      <span class="w-6 h-6 rounded bg-slate-800 text-white flex items-center justify-center text-xs font-bold">LM</span>
+      <span>© 2026 <strong>anatomy-mirror-338</strong> - 官方开源高可用拓扑镜像与白皮书</span>
+    </div>
+    <div class="flex items-center gap-4 text-xs text-slate-400">
+      <a href="./index.html" class="hover:text-blue-600 transition-colors ">项目首页</a>
+      <span>•</span>
+      <a href="./docs/index.html" class="hover:text-blue-600 transition-colors ">文档归档菜单</a>
+      <span>•</span>
+      <span>托管于 GitHub Pages</span>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,5 @@
+title: "anatomy-mirror-338"
+description: "High availability mirror and network topology specifications for wheresryan22/anatomy"
+theme: jekyll-theme-cayman
+plugins:
+  - jekyll-relative-links
